@@ -51,6 +51,11 @@
   var DOOR_ROW = 12, DOOR_COL_A = 13, DOOR_COL_B = 14;
   var HOUSE_CX = 13.5, HOUSE_CY = 14;      // tile coords of the house centre
   var PAC_START = { col: 13.5, row: 23 };
+  // Bonus fruit sits in the corridor above the ghost house. It MUST be a tile
+  // Pac-Man can actually stand on, so the pickup test can succeed -- the classic
+  // arcade spot below the house is void in this layout. test/logic.test.js
+  // flood-fills the board and fails if this tile is ever unreachable.
+  var FRUIT_TILE = { col: 13.5, row: 11.5 };
 
   // ---------------------------------------------------------------- tuning
   var PAC_SPEED = 8.4;        // tiles per second
@@ -402,7 +407,7 @@
     var eaten = pelletTotal - pelletsLeft;
     if ((eaten === 70 && game.fruitsShown === 0) || (eaten === 170 && game.fruitsShown === 1)) {
       game.fruitsShown++;
-      game.fruit = { col: 13.5, row: 17.5 };
+      game.fruit = { col: FRUIT_TILE.col, row: FRUIT_TILE.row };
       game.fruitTimer = 9.5;
     }
 
@@ -430,19 +435,20 @@
       var sp = GHOST_SPEED * 0.72 * TILE * dt;
       if (Math.abs(g.x - tx) > 0.5) {
         g.x += Math.sign(tx - g.x) * Math.min(sp, Math.abs(tx - g.x));
+        g.dir = UP;
       } else {
         g.x = tx;
         g.y -= Math.min(sp, g.y - ty);
+        g.dir = UP;
         if (g.y <= ty + 0.5) {
           g.y = ty;
           g.x = tx;
           g.state = 'roam';
-          g.dir = LEFT;
+          g.dir = LEFT;          // set last: the ghost is out and heading off
           g.frightened = game.frightTimer > 0;
           snapToCentre(g);
         }
       }
-      g.dir = UP;
       return;
     }
 
@@ -987,6 +993,7 @@
   window.PACMAN = {
     game: game, steer: steer, newGame: newGame,
     grid: function () { return grid; },
-    pellets: function () { return pelletsLeft; }
+    pellets: function () { return pelletsLeft; },
+    fruitTile: function () { return FRUIT_TILE; }
   };
 }());

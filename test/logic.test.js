@@ -162,6 +162,54 @@ killer.x = P.game.pac.x; killer.y = P.game.pac.y;
 tick(180);
 ok(P.game.lives === livesBefore - 1, `colliding with a ghost costs a life (${livesBefore} -> ${P.game.lives})`);
 
+head('bonus fruit is reachable and collectable');
+P.newGame(); tick(150);
+// Flood-fill the board from pac-man's start and require the fruit tile to be in it.
+// The classic arcade fruit spot is void in this layout, so this must be checked.
+const ft = P.fruitTile();
+const fcol = Math.floor(ft.col), frow = Math.floor(ft.row);
+const board = P.grid();
+const at = (c, r) => {
+  if (r < 0 || r >= 31) return '#';
+  if (c < 0 || c >= 28) return r === 14 ? ' ' : '#';
+  return board[r][c];
+};
+const walkable = (c, r) => { const t = at(c, r); return t !== '#' && t !== 'X' && t !== '-'; };
+const reach = new Set(['13,23']); const queue = [[13, 23]];
+while (queue.length) {
+  const [c, r] = queue.shift();
+  for (const [dc, dr] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+    let nc = c + dc, nr = r + dr;
+    if (nc < 0) nc += 28; if (nc >= 28) nc -= 28;
+    const k = nc + ',' + nr;
+    if (nr < 0 || nr >= 31 || reach.has(k) || !walkable(nc, nr)) continue;
+    reach.add(k); queue.push([nc, nr]);
+  }
+}
+ok(reach.has(fcol + ',' + frow),
+   `fruit tile (${fcol},${frow}) is reachable from pac-man's start (tile=${JSON.stringify(at(fcol, frow))})`);
+
+// The pickup test must actually be satisfiable by standing on that tile.
+const hitTiles = [];
+for (let r = 0; r < 31; r++) for (let c = 0; c < 28; c++) {
+  if (Math.abs((c + 0.5) * 16 - ft.col * 16) < 16 * 0.8 &&
+      Math.abs((r + 0.5) * 16 - ft.row * 16) < 16 * 0.8) hitTiles.push(c + ',' + r);
+}
+ok(hitTiles.some(k => reach.has(k)),
+   `at least one reachable tile can trigger the pickup (candidates=${hitTiles.join(' ')})`);
+
+// End-to-end: spawn the fruit, walk onto it, and confirm it scores.
+P.game.fruit = { col: ft.col, row: ft.row };
+P.game.fruitTimer = 9.5;
+P.game.ghosts.forEach(g => { g.state = 'house'; });
+const scoreBefore = P.game.score;
+P.game.pac.x = fcol * 16 + 8; P.game.pac.y = frow * 16 + 8;
+P.game.pac.col = fcol; P.game.pac.row = frow;
+tick(2);
+ok(P.game.fruit === null, 'walking onto the fruit collects it');
+ok(P.game.score === scoreBefore + 100 * P.game.level,
+   `fruit scores 100 x level (${scoreBefore} -> ${P.game.score}, level ${P.game.level})`);
+
 head('level clears when the board is empty');
 P.newGame();
 ok(P.pellets() === 244, `fresh level starts with 244 uneaten pellets (got ${P.pellets()})`);
