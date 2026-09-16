@@ -1,0 +1,201 @@
+:root {
+  --bg: #05050f;
+  --panel: #0c0c1c;
+  --ink: #e8e8f4;
+  --dim: #7b7b9c;
+  --accent: #ffd54a;
+  --blue: #2a2ad8;
+  --line: rgba(122,122,180,.22);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  background:
+    radial-gradient(1100px 620px at 50% -10%, #17173a 0%, transparent 62%),
+    var(--bg);
+  color: var(--ink);
+  font-family: ui-monospace, "SFMono-Regular", "Cascadia Mono", Menlo, Consolas, monospace;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  padding: 18px 16px 28px;
+  padding-block-end: max(28px, env(safe-area-inset-bottom));
+}
+
+.shell {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ---------- HUD ---------- */
+.hud {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.hud-cell { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+
+.hud-label {
+  font-size: 10px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.hud-value {
+  font-size: 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+  line-height: 1.15;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lives { letter-spacing: 1px; }
+
+/* ---------- Stage ---------- */
+.stage {
+  position: relative;
+  background: #000;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  aspect-ratio: 448 / 496;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px 20px;
+  text-align: center;
+  background: rgba(4, 4, 14, .86);
+  backdrop-filter: blur(3px);
+  transition: opacity .18s ease;
+}
+
+.overlay[hidden] { display: none; }
+
+.title {
+  margin: 0;
+  font-size: clamp(30px, 10vw, 46px);
+  letter-spacing: .1em;
+  color: var(--accent);
+  text-shadow: 0 0 22px rgba(255, 213, 74, .42);
+}
+.title span { color: #47d7ff; text-shadow: 0 0 22px rgba(71, 215, 255, .38); }
+
+.overlay-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink);
+  max-width: 30ch;
+}
+
+.hint {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--dim);
+  max-width: 34ch;
+}
+
+.btn {
+  font: inherit;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 11px 22px;
+  color: #10101f;
+  background: var(--accent);
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease;
+  box-shadow: 0 6px 20px rgba(255, 213, 74, .26);
+}
+.btn:hover { transform: translateY(-1px); box-shadow: 0 8px 26px rgba(255, 213, 74, .36); }
+.btn:active { transform: translateY(0); }
+
+/* ---------- Touch pad ---------- */
+.pad { display: none; }
+
+@media (hover: none) and (pointer: coarse) {
+  .pad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-areas: ". up ." "left down right";
+    gap: 8px;
+    max-width: 260px;
+    width: 100%;
+    margin: 2px auto 0;
+  }
+  .pad-btn {
+    font: inherit;
+    font-size: 20px;
+    padding: 16px 0;
+    color: var(--ink);
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .pad-btn:active { background: #17173a; }
+  .up { grid-area: up; } .left { grid-area: left; }
+  .down { grid-area: down; } .right { grid-area: right; }
+}
+
+/* ---------- Footer ---------- */
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.chip {
+  font: inherit;
+  font-size: 12px;
+  padding: 8px 14px;
+  color: var(--dim);
+  text-decoration: none;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color .12s ease, border-color .12s ease;
+}
+.chip:hover { color: var(--ink); border-color: rgba(122,122,180,.5); }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition-duration: .01ms !important; }
+}

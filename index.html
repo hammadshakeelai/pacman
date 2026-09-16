@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pac-Man &mdash; HTML5 Canvas</title>
+<meta name="description" content="A playable Pac-Man style arcade game written in vanilla JavaScript and HTML5 canvas. No dependencies, no build step.">
+<meta name="theme-color" content="#05050f">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="shell">
+  <header class="hud">
+    <div class="hud-cell"><span class="hud-label">Score</span><span id="score" class="hud-value">0</span></div>
+    <div class="hud-cell"><span class="hud-label">High</span><span id="high" class="hud-value">0</span></div>
+    <div class="hud-cell"><span class="hud-label">Level</span><span id="level" class="hud-value">1</span></div>
+    <div class="hud-cell"><span class="hud-label">Lives</span><span id="lives" class="hud-value lives">&nbsp;</span></div>
+  </header>
+
+  <div class="stage">
+    <canvas id="game" width="448" height="496" aria-label="Pac-Man game board"></canvas>
+    <div id="overlay" class="overlay">
+      <h1 class="title">PAC<span>MAN</span></h1>
+      <p id="overlay-text" class="overlay-text">Eat every pellet. Avoid the ghosts.</p>
+      <button id="start-btn" class="btn" type="button">Press Enter to Play</button>
+      <p class="hint">Arrow keys or WASD &middot; swipe on touch &middot; P to pause &middot; M to mute</p>
+    </div>
+  </div>
+
+  <div class="pad" id="pad" aria-hidden="true">
+    <button class="pad-btn up"    data-dir="up"    type="button">&#9650;</button>
+    <button class="pad-btn left"  data-dir="left"  type="button">&#9664;</button>
+    <button class="pad-btn down"  data-dir="down"  type="button">&#9660;</button>
+    <button class="pad-btn right" data-dir="right" type="button">&#9654;</button>
+  </div>
+
+  <footer class="foot">
+    <button id="mute-btn" class="chip" type="button" aria-pressed="false">&#128266; Sound</button>
+    <button id="restart-btn" class="chip" type="button">&#8635; Restart</button>
+    <a class="chip" href="https://github.com/hammadshakeelai/pacman" target="_blank" rel="noopener">Source</a>
+  </footer>
+</main>
+<script src="game.js"></script>
+</body>
+</html>
